@@ -1,0 +1,43 @@
+OpenCV:
+  Open CV deals with BGR color space instead of RGB color space due to historical reason, where RGB is the modern standard for physical color spaces.
+
+Image acquisition:
+  Image should be of good quality. Getting an image through a professional camera is recommended. The image should have optimal lighting conditions and the foreground should be visually distinguishable from the backgrounds.
+
+Crop & Align Image:
+  The image contains areas with unnecessary extra parts which are out of context and makes the counting of object more complex. Inorder to prevent wastage of computation and optimize the counting algorithm, the image should be trimmed such that the the image is bounded by edges. Inorder to maximise the removal of unnecessary background, image may be rotated before cropping.
+
+Canny Edge:
+  Canny edge
+
+  Image Dilation:
+    After canny edge detection, the edge seems to be too narrow. So, adding some extra pixels to the boundary so that the edge is easily seeable.
+    Also, it helps to avoid sharp curves.
+    Hence the image is dilated with a kernal matrix of kernal size 2x2.
+
+Contrast Enhancement:
+  The image obtained from camera must be converted to an intermediate form where the key features of the image can easily be visually distinguishable.
+  
+  Convert from BGR to HSV:
+    In BGR, each of the pixel holds the intensity value which is correlated to the color luminance of blue, green and red channel. So, converting to HSV (Hue, Saturation and Value) color space makes it easier to adjust the luminance and saturation. Since color information can be stored in a single byte and the remaining two bytes are used to store Saturation and Luminance. 
+
+  The saturation is increased by 450%, so that the background and foreground look fairly distinct even when the color is almost same but different. The value is also increased by 150%, so that the brighter areas of the image appear more brighter, hence it makes the features easily distinguishable.
+
+  After increasing the saturation and value, the pixels are trimmed back to 24bit color space and converted back to bgr color space.
+
+K means clustering:
+  K means clustering with cluster count, k = 3 is used here to filter out the subject from the background, since the real world images contains an immediate secondary background around the subject distinct from the primary background.
+
+  Finding optimal cluster:
+    Since we have done k means clustering with 3 means, there are 3 segments and we have to separate our subject out of the them. So, we have to find the primary and the secondary background and merge them to a single background segment, so that our image becomes binary with foreground with our subject. 
+
+    Since our image is expected to be cropped by the user ideally, we can safely assume that the foreground of the image holds most of the area, we can take the size of each segment by number of pixels and take the merge the segments with least number of pixels together to form the background.
+
+    If the image is not cropped, find the distance of each pixel from each cluster from cluster center. take it's mean and standard deviation. ifbn n the mean is very close to the image center and the standard deviation is very low, then consider merging them.
+
+Merging:
+
+Contour mapping:
+  Gaussian Blur:
+  A gaussian blur is applied with a 5x5 kernal matrix
+
